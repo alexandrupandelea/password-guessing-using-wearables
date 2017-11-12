@@ -3,7 +3,7 @@
 static char key_map[KEY_MAX] = {0};
 
 /* Sets a minimalistic mapping between the
- * codes and the typed character
+ * codes and the characters
  */
 void keymap_init_map()
 {
@@ -79,7 +79,8 @@ void keymap_init_map()
     key_map[KEY_SPACE] = ' ';
 }
 
-/*
+/* Returns whether the code points to an actual character key
+ * or whether the key has another function
  */
 int keymap_is_special_key(int code)
 {
@@ -87,12 +88,12 @@ int keymap_is_special_key(int code)
 }
 
 /* Returns the typed character corresponding for a code
- * 
  */
 char keymap_get_key(int code)
 {
     if (keymap_is_special_key(code))
         return 0;
 
+    /* TODO: take special keys into consideration (capslock, shift) */
     return key_map[code];
 }
