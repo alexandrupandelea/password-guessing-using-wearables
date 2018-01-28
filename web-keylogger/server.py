@@ -10,6 +10,22 @@ KEY = "key"
 KEYCODE = "keyCode"
 
 class DatabaseOperations:
+    def correct_key_entry(self, keyEntry):
+        if (not TIMESTAMP in keyEntry) or (not KEY in keyEntry) or \
+            (not KEYCODE in keyEntry):
+            return False
+
+        if not isinstance(keyEntry[TIMESTAMP], int):
+            return False
+
+        if len(keyEntry[KEY]) != 1:
+            return False
+
+        if not isinstance(keyEntry[KEYCODE], int):
+            return False
+
+        return True
+
     def insert_data(self, data):
         if KEYS in data.keys() and len(data[KEYS]) > 0:
             sql = "insert into pressedKeys values "
@@ -17,8 +33,9 @@ class DatabaseOperations:
             cursor = db.cursor()
 
             for keyEntry in data[KEYS]:
-                sql += "(" + str(keyEntry[TIMESTAMP]) + ", '" + keyEntry[KEY] + "', " + \
-                    str(keyEntry[KEYCODE]) + "),"
+                if self.correct_key_entry(keyEntry):
+                    sql += "(" + str(keyEntry[TIMESTAMP]) + ", '" + keyEntry[KEY] + \
+                        "', " + str(keyEntry[KEYCODE]) + "),"
 
             # remove last ','
             sql = sql[:-1]
