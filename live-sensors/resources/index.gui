@@ -1,0 +1,83 @@
+<svg id="screen" width="100%" height="100%" class="background">
+  <!-- Axis -->
+  <line x1="30" y1="30" x2="30" y2="100%-30" fill="white" stroke-width="1" />
+  <line x1="30" y1="100%-30" x2="100%-30" y2="100%-30" fill="white" stroke-width="1" />
+
+  <rect id = "xRec" x="95%" y="0%" width="10" height="10" fill="blue" />
+  <rect id = "yRec" x="95%" y="5%" width="10" height="10" fill="red" />
+  <rect id = "yRec" x="95%" y="10%" width="10" height="10" fill="green" />
+
+  <text class="sensor-label" x="96%" y="4%" font-size="20">x</text>
+  <text class="sensor-label" x="96%" y="9%" font-size="20">y</text>
+  <text class="sensor-label" x="96%" y="14%" font-size="20">z</text>
+
+  <text id = "axisHigh" class="sensor-label" x="10" y="40" font-size="15">30</text>
+  <text id = "axisMiddle" class="sensor-label" x="10" y="130" font-size="15">0</text>
+  <text id = "axisLow" class="sensor-label" x="10" y="220" font-size="15">-30</text>
+
+  <!-- Y lines -->
+  <line id="liney0" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney1" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney2" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney3" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney4" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney5" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney6" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney7" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney8" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney9" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney10" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney11" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney12" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney13" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney14" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney15" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney16" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney17" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney18" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+  <line id="liney19" x1="0" y1="0" x2="0" y2="0" fill="red" stroke-width="1" />
+
+  <!-- X points -->
+  <line id="linex0" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex1" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex2" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex3" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex4" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex5" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex6" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex7" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex8" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex9" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex10" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex11" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex12" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex13" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex14" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex15" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex16" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex17" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex18" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+  <line id="linex19" x1="0" y1="0" x2="0" y2="0" fill="blue" stroke-width="1" />
+
+  <!-- Z points -->
+  <line id="linez0" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez1" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez2" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez3" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez4" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez5" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez6" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez7" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez8" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez9" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez10" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez11" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez12" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez13" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez14" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez15" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez16" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez17" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez18" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+  <line id="linez19" x1="0" y1="0" x2="0" y2="0" fill="green" stroke-width="1" />
+</svg>

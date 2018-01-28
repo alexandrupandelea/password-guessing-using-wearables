@@ -1,0 +1,17 @@
+{
+  "fitbit": {
+    "appUUID": "d3032d03-e151-49c4-8df6-d86eeead4c91",
+    "appType": "app",
+    "appDisplayName": "LiveSensors",
+    "iconFile": "resources/icon.png",
+    "wipeColor": "#4caf50",
+    "requestedPermissions": [
+      "access_heart_rate"
+    ],
+    "i18n": {
+      "en": {
+        "name": "LiveSensors"
+      }
+    }
+  }
+}
