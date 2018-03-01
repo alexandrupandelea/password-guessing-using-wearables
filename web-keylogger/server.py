@@ -66,6 +66,7 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         if self.path == "/" or self.path == "/index.html":
             indexStr = open('index.html', 'r').read()
         elif self.path == "/password":
+            global passwords
             indexStr = random.choice(passwords)
         else:
             indexStr = "Invalid path"
@@ -108,13 +109,15 @@ def test(HandlerClass=SimpleHTTPRequestHandler,
 
     httpd.serve_forever()
 
-def main(HandlerClass = SimpleHTTPRequestHandler, ServerClass = BaseHTTPServer.HTTPServer):
-    BaseHTTPServer.test(HandlerClass, ServerClass)
+def main():
 
-if __name__ == '__main__':
+    global passwords
     with open("passwords") as f:
         passwords = f.readlines()
 
     passwords = [x.strip() for x in passwords]
 
     test()
+
+if __name__ == '__main__':
+    main()
