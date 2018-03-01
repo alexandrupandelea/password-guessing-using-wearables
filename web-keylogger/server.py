@@ -3,11 +3,14 @@ import BaseHTTPServer
 import sys
 import simplejson
 import MySQLdb
+import random
 
 TIMESTAMP = "timestamp"
 KEYS = "keys"
 KEY = "key"
 KEYCODE = "keyCode"
+
+passwords = []
 
 class DatabaseOperations:
     def correct_key_entry(self, keyEntry):
@@ -59,7 +62,14 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def do_GET(self):
         self._set_headers()
-        indexStr = open('index.html', 'r').read()
+
+        if self.path == "/" or self.path == "/index.html":
+            indexStr = open('index.html', 'r').read()
+        elif self.path == "/password":
+            indexStr = random.choice(passwords)
+        else:
+            indexStr = "Invalid path"
+
         self.wfile.write(indexStr)
 
     def do_POST(self):
@@ -102,4 +112,9 @@ def main(HandlerClass = SimpleHTTPRequestHandler, ServerClass = BaseHTTPServer.H
     BaseHTTPServer.test(HandlerClass, ServerClass)
 
 if __name__ == '__main__':
+    with open("passwords") as f:
+        passwords = f.readlines()
+
+    passwords = [x.strip() for x in passwords]
+
     test()

@@ -153,25 +153,13 @@
             document.getElementById("WriteTextArea").value = "";
             document.getElementById("WriteTextArea").focus();
             keys = [];
-            textsNr = 5;
 
-            function getRandomText(i) {
-                if (i == 1) {
-                    return "abc def xyz";
-                } else if (i == 2) {
-                    return "demo sentence";
-                } else if (i == 3) {
-                    return "qwerty";
-                } else if (i == 4) {
-                    return "asdfghj";
-                } else {
-                    return "bla bla bla"
-                }
-            }
             function showRandomInputText () {
-                let i = Math.floor((Math.random() * 10)) % textsNr + 1;
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.open("GET", "http://0.0.0.0/password", false);
+                xmlHttp.send(null);
 
-                document.getElementById("copyTextArea").value = getRandomText(i);
+                document.getElementById("copyTextArea").value = xmlHttp.responseText;
             }
             showRandomInputText();
 
