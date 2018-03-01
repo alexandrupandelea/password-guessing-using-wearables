@@ -163,7 +163,7 @@
             }
             showRandomInputText();
 
-            function httpGetAsync(theUrl, callback) {
+            function httpPostAsync(theUrl, callback) {
                 var xmlHttp = new XMLHttpRequest();
                 xmlHttp.onreadystatechange = function() {
                     if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
@@ -188,7 +188,7 @@
                 document.getElementById("loading").style.display = '';
 
                 /* change this with actual server address */
-                httpGetAsync("http://0.0.0.0:80", postRequestCallback);
+                httpPostAsync("http://0.0.0.0:80", postRequestCallback);
             }
 
             function onResetClicked() {
