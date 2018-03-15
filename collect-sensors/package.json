@@ -1,0 +1,17 @@
+{
+  "fitbit": {
+    "appUUID": "5dcdc919-c614-4ca9-babf-1b26a79fe4f4",
+    "appType": "app",
+    "appDisplayName": "collect-sensors",
+    "iconFile": "resources/icon.png",
+    "wipeColor": "#607d8b",
+    "requestedPermissions": [
+      "access_internet"
+    ],
+    "i18n": {
+      "en": {
+        "name": "collect-sensors"
+      }
+    }
+  }
+}

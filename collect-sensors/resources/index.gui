@@ -1,0 +1,12 @@
+<svg>
+  <text id="accel-label" class="sensor-label" x="50%" y="30">accelerometer</text>
+  <text id="accel-data" class="sensor-data" x="50%" y="65">{ ... }</text>
+  <text id="gyro-label" class="sensor-label" x="50%" y="110">gyroscope</text>
+  <text id="gyro-data" class="sensor-data" x="50%" y="145">{ ... }</text>
+  
+  <use id="send-button" href="#square-button" x="59" y="170" height="75" width="230"
+    fill="#5b965b" font-family="System-Regular" font-size="45">
+    <set href="#text" attributeName="text-buffer" to="Send Data" />
+    <set href="#text" attributeName="fill" to="white" />
+  </use>
+</svg>
