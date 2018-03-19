@@ -17,6 +17,7 @@ var yMax = 220;
 
 var rangeMin = -15;
 var rangeMax = 15;
+var range = rangeMax - rangeMin;
 
 let accelData = document.getElementById("accel-data");
 let hrmData = document.getElementById("hrm-data");
@@ -34,6 +35,10 @@ let yPoints = [];
 let xPoints = [];
 let zPoints = [];
 
+let linesArrX = [];
+let linesArrY = [];
+let linesArrZ = [];
+
 accel.start();
 gyro.start();
 
@@ -42,14 +47,16 @@ me.addEventListener("unload", function(){
   gyro.stop();
 });
 
-function normaliseToAxis(y, limMin, limMax) {
-  var range = rangeMax - rangeMin;
-  var range2 = limMax - limMin;
+function buildLinesDictionary() {
+  for (var i = 0; i < pointsNr; i++) {
+       var lineidy = "liney" + i;
+       var lineidx = "linex" + i;
+       var lineidz = "linez" + i;
 
-  var normalisedY = (y - rangeMin) / range;
-  normalisedY = normalisedY * range2 + limMin;
-
-  return normalisedY;
+      linesArrX[i] = document.getElementById(lineidy);
+      linesArrY[i] = document.getElementById(lineidx);
+      linesArrZ[i] = document.getElementById(lineidz);
+  }
 }
 
 function appendData(sensor) {
@@ -70,41 +77,38 @@ function appendData(sensor) {
 }
 
 function updateLines() {
-  let lineid = "";
-
   for (var i = 0; i < yPoints.length - 1; i++) {
-    var lineidy = "liney" + i;
-    var lineidx = "linex" + i;
-    var lineidz = "linez" + i;
+    let liney = linesArrY[i];
+    let linex = linesArrX[i];
+    let linez = linesArrZ[i];
 
-    let liney = document.getElementById(lineidy);
-    let linex = document.getElementById(lineidx);
-    let linez = document.getElementById(lineidz);
+    if (i == yPoints.length - 2) {
+      liney.style.visibility = "visible";
+      linex.style.visibility = "visible";
+      linez.style.visibility = "visible";
+    }
 
-    liney.style.visibility = "visible";
-    linex.style.visibility = "visible";
-    linez.style.visibility = "visible";
-
-    //y
+    //y line with y coordinate normalised to be between [yMin, YMax]
+    //(same logic applies for all other lines)
     liney.x1 = xMin + xMax / pointsNr * i;
-    liney.y1 = normaliseToAxis(yPoints[i], yMin, yMax);
+    liney.y1 = (yPoints[i] - rangeMin) / range * (yMax - yMin) + yMin;
 
     liney.x2 = xMin + xMax / pointsNr * (i + 1);
-    liney.y2 = normaliseToAxis(yPoints[i + 1], yMin, yMax);
+    liney.y2 = (yPoints[i + 1] - rangeMin) / range * (yMax - yMin) + yMin;
 
     //x
     linex.x1 = xMin + xMax / pointsNr * i;
-    linex.y1 = normaliseToAxis(xPoints[i], yMin, yMax);
+    linex.y1 = (xPoints[i] - rangeMin) / range * (yMax - yMin) + yMin;
 
     linex.x2 = xMin + xMax / pointsNr * (i + 1);
-    linex.y2 = normaliseToAxis(xPoints[i + 1], yMin, yMax);
+    linex.y2 = (xPoints[i + 1] - rangeMin) / range * (yMax - yMin) + yMin;
 
     //z
     linez.x1 = xMin + xMax / pointsNr * i;
-    linez.y1 = normaliseToAxis(zPoints[i], yMin, yMax);
+    linez.y1 = (zPoints[i] - rangeMin) / range * (yMax - yMin) + yMin;
 
     linez.x2 = xMin + xMax / pointsNr * (i + 1);
-    linez.y2 = normaliseToAxis(zPoints[i + 1], yMin, yMax);
+    linez.y2 = (zPoints[i + 1] - rangeMin) / range * (yMax - yMin) + yMin;
   }
 }
 
@@ -164,13 +168,9 @@ messaging.peerSocket.onmessage = evt => {
       zPoints = [];
 
       for (var i = 0; i < pointsNr; i++) {
-        var lineidy = "liney" + i;
-        var lineidx = "linex" + i;
-        var lineidz = "linez" + i;
-
-        let liney = document.getElementById(lineidy);
-        let linex = document.getElementById(lineidx);
-        let linez = document.getElementById(lineidz);
+        let liney = linesArrY[i];
+        let linex = linesArrX[i];
+        let linez = linesArrZ[i];
 
         liney.style.visibility = "hidden";
         linex.style.visibility = "hidden";
@@ -180,5 +180,6 @@ messaging.peerSocket.onmessage = evt => {
   }
 };
 
+buildLinesDictionary();
 refreshData();
-setInterval(refreshData, 30);
+setInterval(refreshData, 5);
