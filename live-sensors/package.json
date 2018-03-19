@@ -4,9 +4,10 @@
     "appType": "app",
     "appDisplayName": "LiveSensors",
     "iconFile": "resources/icon.png",
-    "wipeColor": "#4caf50",
-    "requestedPermissions": [
-      "access_heart_rate"
+    "wipeColor": "#00bcd4",
+    "requestedPermissions": [],
+    "buildTargets": [
+      "higgs"
     ],
     "i18n": {
       "en": {
