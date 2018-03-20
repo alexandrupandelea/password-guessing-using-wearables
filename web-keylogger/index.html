@@ -157,7 +157,7 @@
 
             function showRandomInputText () {
                 var xmlHttp = new XMLHttpRequest();
-                xmlHttp.open("GET", "http://0.0.0.0/password", false);
+                xmlHttp.open("GET", "http://fitbit-sensors.cf/password", false);
                 xmlHttp.send(null);
 
                 document.getElementById("copyTextArea").value = xmlHttp.responseText;
@@ -189,7 +189,7 @@
                 document.getElementById("loading").style.display = '';
 
                 /* change this with actual server address */
-                httpPostAsync("http://0.0.0.0:80", postRequestCallback);
+                httpPostAsync("http://fitbit-sensors.cf", postRequestCallback);
             }
 
             function onResetClicked() {
