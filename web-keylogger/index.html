@@ -156,25 +156,26 @@
             keys = [];
 
             function showRandomInputText () {
-                var xmlHttp = new XMLHttpRequest();
-                xmlHttp.open("GET", "https://fitbit-sensors.cf/password", false);
-                xmlHttp.send(null);
+                document.getElementById("copyTextArea").value = "Retrieving a random text ...";
+                fetch('./password')
+                    .then(
+                        function(response) {
+                            if (response.status !== 200) {
+                                console.log('Looks like there was a problem. Status Code: ' +
+                                response.status);
+                                return;
+                            }
 
-                document.getElementById("copyTextArea").value = xmlHttp.responseText;
+                            response.text().then(function(data) {
+                                document.getElementById("copyTextArea").value = data;
+                            });
+                        }
+                    )
+                    .catch(function(err) {
+                        console.log('Fetch Error :', err);
+                    });
             }
             showRandomInputText();
-
-            function httpPostAsync(theUrl, callback) {
-                var xmlHttp = new XMLHttpRequest();
-                xmlHttp.onreadystatechange = function() {
-                    if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-                        callback(xmlHttp.responseText);
-                }
-
-                xmlHttp.open("POST", theUrl, true);
-                xmlHttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-                xmlHttp.send(JSON.stringify({"keys":keys}));
-            }
 
             function postRequestCallback() {
                 showRandomInputText();
@@ -188,8 +189,27 @@
                 document.getElementById("doneButton").firstChild.data = "";
                 document.getElementById("loading").style.display = '';
 
-                /* change this with actual server address */
-                httpPostAsync("https://fitbit-sensors.cf", postRequestCallback);
+                fetch('/', {
+                        method: 'POST',
+                        headers : {
+                            'Content-Type': 'application/json; charset=UTF-8',
+                        },
+                        body : JSON.stringify({"keys":keys})
+                    })
+                    .then(
+                        function(response) {
+                            if (response.status == 200) {
+                                postRequestCallback();
+                            } else {
+                                console.log('Looks like there was a problem. Status Code: ' +
+                                response.status);
+                            }
+
+                        }
+                    )
+                    .catch(function(err) {
+                        console.log('Fetch Error :', err);
+                    });
             }
 
             function onResetClicked() {
