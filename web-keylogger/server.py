@@ -4,6 +4,7 @@ import sys
 import simplejson
 import MySQLdb
 import random
+import ssl
 
 TIMESTAMP = "timestamp"
 KEYS = "keys"
@@ -94,7 +95,7 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 def test(HandlerClass=SimpleHTTPRequestHandler,
          ServerClass=BaseHTTPServer.HTTPServer):
     host = ''
-    port = 80
+    port = 443
 
     if len(sys.argv) == 2:
         host = sys.argv[1]
@@ -103,9 +104,11 @@ def test(HandlerClass=SimpleHTTPRequestHandler,
     server_address = (host, port)
 
     httpd = ServerClass(server_address, HandlerClass)
+    httpd.socket = ssl.wrap_socket (httpd.socket, keyfile='privkey.pem', \
+        certfile='./fullchain.pem', server_side=True)
 
     sockaddr = httpd.socket.getsockname()
-    print "Serving HTTP on", sockaddr[0], "port", sockaddr[1]
+    print "Serving HTTPS on", sockaddr[0], "port", sockaddr[1]
 
     httpd.serve_forever()
 
