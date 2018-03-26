@@ -18,6 +18,8 @@ var MAX_ARRAY_ELEMS = 60;
  * plus another 8 for array overhead
  */
 var ELEM_SIZE = 7 * 8 * 2;
+var RETRY_SEND_MS = 20;
+var COLLECT_DATA_MS = 50;
 
 // display always on
 display.autoOff = false;
@@ -65,7 +67,7 @@ sendButton.onactivate = function(evt) {
 
   console.log(data.length + " " + msgsNr);
 
-  helloHandle = setInterval(sendHello, 1000);
+  helloHandle = setInterval(sendHello, RETRY_SEND_MS);
 }
 
 function sendHello() {
@@ -101,13 +103,13 @@ messaging.peerSocket.onmessage = (evt) => {
 
   crtMsg += 1;
   if (crtMsg < msgsNr) {
-    helloHandle = setInterval(sendHello, 200);
+    helloHandle = setInterval(sendHello, RETRY_SEND_MS);
   } else if (crtMsg == msgsNr) {
-    doneHandle = setInterval(sendDone, 200);
+    doneHandle = setInterval(sendDone, RETRY_SEND_MS);
 
     // TODO: this should be called when the server received the data
     data = [];
-    refreshHandle = setInterval(refreshData, 50);
+    refreshHandle = setInterval(refreshData, COLLECT_DATA_MS);
   } else if (crtMsg == msgsNr + 1) {
     sendButton.style.visibility = "visible";
   }
@@ -158,4 +160,4 @@ function refreshData() {
 }
 
 writeSimpleFile();
-var refreshHandle = setInterval(refreshData, 50);
+var refreshHandle = setInterval(refreshData, COLLECT_DATA_MS);

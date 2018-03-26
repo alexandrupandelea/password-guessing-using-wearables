@@ -8,6 +8,9 @@
     "requestedPermissions": [
       "access_internet"
     ],
+    "buildTargets": [
+      "higgs"
+    ],
     "i18n": {
       "en": {
         "name": "collect-sensors"
