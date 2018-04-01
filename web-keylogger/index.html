@@ -92,6 +92,10 @@
             cursor: pointer;
             color: #6b6b6b;
         }
+        .id-style {
+            color: red;
+            display:inline;
+        }
         </style>
     </head>
     <body>
@@ -105,6 +109,9 @@
             <h4>If a mistake is done press "Reset" (Eg: mistyped character, no backspace allowed)</h4>
         </p>
 
+        <div>
+            <h4>Use this <b>id</b> on the watch: <div id="id-value" class="id-style"></div></h4>
+        </div>
 
         <div>
           <input type="checkbox" class="read-more-state" id="post-2" />
@@ -153,7 +160,32 @@
             document.getElementById("copyTextArea").value = "";
             document.getElementById("WriteTextArea").value = "";
             document.getElementById("WriteTextArea").focus();
-            keys = [];
+            var keys = [];
+            var id = -1
+
+            function showRandomId() {
+                id = -1;
+                document.getElementById("id-value").innerHTML = "Retrieving an id ...";
+                fetch("./id")
+                    .then(
+                        function(response) {
+                            if (response.status !== 200) {
+                                console.log('Looks like there was a problem. Status Code: ' +
+                                response.status);
+                                return;
+                            }
+
+                            response.text().then(function(data) {
+                                document.getElementById("id-value").innerHTML = data;
+                                id = parseInt(data);
+                            });
+                        }
+                    )
+                    .catch(function(err) {
+                        console.log('Fetch Error :', err);
+                    });
+            }
+            showRandomId();
 
             function showRandomInputText () {
                 document.getElementById("copyTextArea").value = "Retrieving a random text ...";
@@ -179,6 +211,7 @@
 
             function postRequestCallback() {
                 showRandomInputText();
+                showRandomId();
                 onResetClicked();
 
                 document.getElementById("doneButton").firstChild.data = "Done";
@@ -194,7 +227,7 @@
                         headers : {
                             'Content-Type': 'application/json; charset=UTF-8',
                         },
-                        body : JSON.stringify({"keys":keys})
+                        body : JSON.stringify({"keys":keys, "id":id})
                     })
                     .then(
                         function(response) {

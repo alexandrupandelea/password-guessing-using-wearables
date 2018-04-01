@@ -5,18 +5,62 @@ import json
 import MySQLdb
 import random
 import ssl
+import time
+import threading
 
 TIMESTAMP = "timestamp"
 KEYS = "keys"
 KEY = "key"
 KEYCODE = "keyCode"
 SENSORS = "sensors"
+ID = "id"
 
+MIN_ID = 1000
+MAX_ID = 9999
+MAX_ITER = 1000
 NR_SENSOR_DATA = 7
+TIMEOUT = 450.0
+PRIORITY = 1
 
 passwords = []
+pending_ids = []
+
+def purge_pending_ids():
+    global pending_ids
+
+    threading.Timer(TIMEOUT, purge_pending_ids).start()
+    crt_time = time.time()
+
+    pending_ids = [x for x in pending_ids if crt_time - x[1] <= TIMEOUT]
+
+purge_pending_ids()
 
 class DatabaseOperations:
+    def random_id(self):
+        sql = "select distinct id from pressedKeys"
+        db = MySQLdb.connect("localhost","root","","datadb")
+        cursor = db.cursor()
+
+        cursor.execute(sql)
+        data = cursor.fetchall()
+
+        existing_ids = [data[i][0] for i in range(0, len(data))]
+
+        retries = MAX_ITER
+        while True:
+            retries -= 1
+            if retries == 0:
+                break
+
+            new_id= random.randint(MIN_ID, MAX_ID)
+            if new_id not in existing_ids and new_id not in pending_ids:
+                # reserve this id for TIMEOUT seconds
+                pending_ids.append([new_id, time.time()])
+
+                return new_id
+
+        return -1
+
     def correct_key_entry(self, key_entry):
         if (not TIMESTAMP in key_entry) or (not KEY in key_entry) or \
             (not KEYCODE in key_entry):
@@ -65,13 +109,17 @@ class DatabaseOperations:
             db = MySQLdb.connect("localhost","root","","datadb")
             cursor = db.cursor()
 
+            # remove id from pending list
+            global pending_ids
+            pending_ids = [x for x in pending_ids if x[0] != data[ID]]
+
             for key_entry in data[KEYS]:
                 if self.correct_key_entry(key_entry):
-                    sql += "(" + str(key_entry[TIMESTAMP]) + ", '" + key_entry[KEY] + \
-                        "', " + str(key_entry[KEYCODE]) + "),"
+                    sql += "(" + str(data[ID]) + ", " + str(key_entry[TIMESTAMP]) + ", '" + \
+                        key_entry[KEY] + "', " + str(key_entry[KEYCODE]) + "),"
 
         elif SENSORS in data.keys() and len(data[SENSORS]) > 0 and \
-            len(data[SENSORS]) % NR_SENSOR_DATA == 0:
+            (len(data[SENSORS]) - 1) % NR_SENSOR_DATA == 0:
 
             sql = "insert into sensorData values "
             db = MySQLdb.connect("localhost","root","","datadb")
@@ -79,10 +127,10 @@ class DatabaseOperations:
 
             for i in range(0, len(data[SENSORS]), NR_SENSOR_DATA):
                 if self.correct_sensor_entry(data, i):
-                    sql += "(" + str(data[SENSORS][i]) + ", " + str(data[SENSORS][i + 1]) + \
-                    ", " + str(data[SENSORS][i + 2]) + ", " + str(data[SENSORS][i + 3]) + ", " + \
-                    str(data[SENSORS][i + 4]) + ", " + str(data[SENSORS][i + 5]) + ", " + \
-                    str(data[SENSORS][i + 6]) + "),"
+                    sql += "(" + str(data[SENSORS][-1]) + ", " + str(data[SENSORS][i]) + ", " + \
+                    str(data[SENSORS][i + 1]) + ", " + str(data[SENSORS][i + 2]) + ", " + \
+                    str(data[SENSORS][i + 3]) + ", " + str(data[SENSORS][i + 4]) + ", " + \
+                    str(data[SENSORS][i + 5]) + ", " + str(data[SENSORS][i + 6]) + "),"
 
         if sql != "":
             # remove last ','
@@ -112,6 +160,8 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         elif self.path == "/password":
             global passwords
             indexStr = random.choice(passwords)
+        elif self.path == "/id":
+            indexStr = self.dbops.random_id()
         else:
             indexStr = "Invalid path"
 
