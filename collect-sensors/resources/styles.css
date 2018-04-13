@@ -1,0 +1,34 @@
+.sensor-label {
+  font-family: System-Regular;
+  fill: white;
+  text-anchor: middle;
+  text-length: 32;
+}
+
+.sensor-data {
+  font-family: System-Light;
+  fill: yellow;
+  text-anchor: middle;
+  text-length: 32;
+}
+
+.percentage {
+  font-family: System-Regular;
+  text-anchor: middle;
+  visibility: hidden;
+  fill: white;
+  text-length: 10;
+}
+
+.input-button {
+  fill="#5b965b";
+  font-family="System-Regular";
+  font-size="45";
+}
+
+.id-value {
+  font-family: System-Bold;
+  text-anchor: middle;
+  visibility: hidden;
+  fill: white;
+}

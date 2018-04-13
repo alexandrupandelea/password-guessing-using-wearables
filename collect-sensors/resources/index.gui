@@ -1,0 +1,70 @@
+<svg>
+  <use id="send-button" href="#square-button" x="59" y="170" height="75" width="230"
+    fill="#5b965b" font-family="System-Regular" font-size="45">
+    <set href="#text" attributeName="text-buffer" to="Send Data" />
+    <set href="#text" attributeName="fill" to="white" />
+  </use>
+  <line id="sep-line" x1="0" y1="60" x2="348" y2="60" fill="#5b965b" stroke-width="2" />
+  <text id="id-value" class="percentage" x="50%" y="30">1234</text>
+  <use id="seven-button" href="#square-button" x="0" y="62" height="62" width="87"
+    fill="#5b965b" font-family="System-Regular" font-size="45">
+    <set href="#text" attributeName="text-buffer" to="7" />
+    <set href="#text" attributeName="fill" to="white" />
+  </use>
+  <use id="eight-button" href="#square-button" x="87" y="62" height="62" width="87"
+    fill="#5b965b" font-family="System-Regular" font-size="45">
+    <set href="#text" attributeName="text-buffer" to="8" />
+    <set href="#text" attributeName="fill" to="white" />
+  </use>
+  <use id="nine-button" href="#square-button" x="174" y="62" height="62" width="87"
+    fill="#5b965b" font-family="System-Regular" font-size="45">
+    <set href="#text" attributeName="text-buffer" to="9" />
+    <set href="#text" attributeName="fill" to="white" />
+  </use>
+  <use id="zero-button" href="#square-button" x="261" y="62" height="62" width="87"
+    fill="#5b965b" font-family="System-Regular" font-size="45">
+    <set href="#text" attributeName="text-buffer" to="0" />
+    <set href="#text" attributeName="fill" to="white" />
+  </use>
+  <use id="delete-button" href="#square-button" x="261" y="124" height="62" width="87"
+    fill="red" font-family="System-Regular" font-size="45">
+    <set href="#image" attributeName="href" to="delete.png" />
+    <set href="#image" attributeName="display" to="inline"/>
+  </use>
+  <use id="done-button" href="#square-button" x="261" y="186" height="62" width="87"
+    fill="blue" font-family="System-Regular" font-size="45">
+    <set href="#image" attributeName="href" to="check.png" />
+    <set href="#image" attributeName="display" to="inline"/>
+  </use>
+  <use id="four-button" href="#square-button" x="0" y="124" height="62" width="87"
+    fill="#5b965b" font-family="System-Regular" font-size="45">
+    <set href="#text" attributeName="text-buffer" to="4" />
+    <set href="#text" attributeName="fill" to="white" />
+  </use>
+  <use id="five-button" href="#square-button" x="87" y="124" height="62" width="87"
+    fill="#5b965b" font-family="System-Regular" font-size="45">
+    <set href="#text" attributeName="text-buffer" to="5" />
+    <set href="#text" attributeName="fill" to="white" />
+  </use>
+  <use id="six-button" href="#square-button" x="174" y="124" height="62" width="87"
+    fill="#5b965b" font-family="System-Regular" font-size="45">
+    <set href="#text" attributeName="text-buffer" to="6" />
+    <set href="#text" attributeName="fill" to="white" />
+  </use>
+  <use id="one-button" href="#square-button" x="0" y="186" height="62" width="87"
+    fill="#5b965b" font-family="System-Regular" font-size="45">
+    <set href="#text" attributeName="text-buffer" to="1" />
+    <set href="#text" attributeName="fill" to="white" />
+  </use>
+  <use id="two-button" href="#square-button" x="87" y="186" height="62" width="87"
+    fill="#5b965b" font-family="System-Regular" font-size="45">
+    <set href="#text" attributeName="text-buffer" to="2" />
+    <set href="#text" attributeName="fill" to="white" />
+  </use>
+  <use id="three-button" href="#square-button" x="174" y="186" height="62" width="87"
+    fill="#5b965b" font-family="System-Regular" font-size="45">
+    <set href="#text" attributeName="text-buffer" to="3" />
+    <set href="#text" attributeName="fill" to="white" />
+  </use>
+  <text id="sent-messages" class="percentage" x="50%" y="200">0%</text>
+</svg>
