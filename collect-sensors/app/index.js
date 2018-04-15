@@ -19,6 +19,7 @@ var MAX_ARRAY_ELEMS = 60;
  */
 var ELEM_SIZE = 7 * 8 * 2;
 var RETRY_SEND_MS = 20;
+var SYNC_RETRY_SEND_MS = 200;
 var COLLECT_DATA_MS = 50;
 
 // display always on
@@ -34,8 +35,10 @@ let data = [];
 
 let msgsNr = 0;
 let crtMsg = 0;
+var timedif = 0;
 let doneHandle = -1;
 let sendDataHandle = -1
+var syncHandle = -1;
 
 var accx = 0;
 var accy = 0;
@@ -84,7 +87,14 @@ sendButton.onclick = function(evt) {
   hideMainUI();
   id.showUI();
 
-   clearInterval(refreshHandle);
+  /* update timestamps with the difference between the
+   * watch and the server
+   */
+  for (var i = 0; i < data.length; i += 7) {
+    data[i] += timedif;
+  }
+
+  clearInterval(refreshHandle);
 }
 
 function sendDataSlice() {
@@ -114,6 +124,15 @@ function sendDone() {
   }
 }
 
+function syncTime() {
+  if (peerSocket.readyState === peerSocket.OPEN) {
+    console.log("watch sent init time")
+    peerSocket.send({ watchInit : Date.now()});
+
+    clearInterval(syncHandle);
+  }
+}
+
 messaging.peerSocket.onerror = (evt) => {
   console.log("watch error");
   console.log(evt.BUFFER_FULL);
@@ -122,8 +141,28 @@ messaging.peerSocket.onerror = (evt) => {
 }
 
 messaging.peerSocket.onmessage = (evt) => {
+  var crtTime = Date.now();
   console.log(evt.data);
 
+  /* time sync with the phone and the server */
+  console.log("watch received" + evt.data);
+
+  if (evt.data.hasOwnProperty('watchInit')) {
+    var delta = (crtTime - evt.data.watchInit) -
+        (evt.data.phoneFinal - evt.data.phoneInit);
+
+    timedif = (evt.data.phoneInit - evt.data.watchInit) - delta / 2;
+
+    console.log("WATCH timedif is " + timedif);
+
+    return;
+  } else if (evt.data.localeCompare("retryTime") == 0) {
+    syncHandle = setInterval(syncTime, SYNC_RETRY_SEND_MS);
+
+    return;
+  }
+
+  /* sensor data handling */
   crtMsg += 1;
   var sentMessages = document.getElementById("sent-messages");
   sentMessages.textContent = parseInt(crtMsg / (msgsNr + 1) * 100) + "%";
@@ -134,9 +173,10 @@ messaging.peerSocket.onmessage = (evt) => {
   } else if (crtMsg == msgsNr) {
     doneHandle = setInterval(sendDone, RETRY_SEND_MS);
 
-    // TODO: this should be called when the server received the data
+    /* Start a new session of collecting data */
     data = [];
     refreshHandle = setInterval(refreshData, COLLECT_DATA_MS);
+    syncHandle = setInterval(syncTime, SYNC_RETRY_SEND_MS);
   } else if (crtMsg == msgsNr + 1) {
     showMainUI();
     sentMessages.style.visibility = "hidden";
@@ -167,3 +207,4 @@ function refreshData() {
 }
 
 var refreshHandle = setInterval(refreshData, COLLECT_DATA_MS);
+syncHandle = setInterval(syncTime, SYNC_RETRY_SEND_MS);

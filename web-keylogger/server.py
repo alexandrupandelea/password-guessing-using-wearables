@@ -14,6 +14,9 @@ KEY = "key"
 KEYCODE = "keyCode"
 SENSORS = "sensors"
 ID = "id"
+CLIENT_TIME = "clientTime"
+SERVER_TIME0 = "serverTime0"
+SERVER_TIME1 = "serverTime1"
 
 MIN_ID = 1000
 MAX_ID = 9999
@@ -153,6 +156,7 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
+        crt_time = int(round(time.time() * 1000))
         self._set_headers()
 
         if self.path == "/" or self.path == "/index.html":
@@ -162,6 +166,16 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             indexStr = random.choice(passwords)
         elif self.path == "/id":
             indexStr = self.dbops.random_id()
+        elif len(self.path.split('=')) == 2 and self.path.split('=')[0][1:] == CLIENT_TIME:
+            client_time = int(self.path.split('=')[1])
+            print client_time
+
+            self.send_header('Content-type', 'application/json')
+            self.wfile.write({CLIENT_TIME : client_time, \
+                SERVER_TIME0 : crt_time, \
+                SERVER_TIME1 : int(round(time.time() * 1000))})
+
+            return
         else:
             indexStr = "Invalid path"
 

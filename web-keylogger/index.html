@@ -162,6 +162,7 @@
             document.getElementById("WriteTextArea").focus();
             var keys = [];
             var id = -1
+            var timedif = 0;
 
             function showRandomId() {
                 id = -1;
@@ -186,6 +187,37 @@
                     });
             }
             showRandomId();
+
+            function syncTime() {
+                fetch("./clientTime=" + Date.now())
+                    .then(
+                        function(response) {
+                            if (response.status !== 200) {
+                                console.log('Looks like there was a problem. Status Code: ' +
+                                response.status);
+                                return;
+                            }
+
+                            response.text().then(function(data) {
+                                var crtTime = Date.now();
+                                data = data.replace("Content-type: application/json\r\n", "");
+                                data = data.slice(1, -1).split(" ")
+                                var initTime = parseInt(data[1].slice(0, -1));
+                                var serverTime0 = parseInt(data[3].slice(0, -1));
+                                var serverTime1 = parseInt(data[5]);
+
+                                var delta = (crtTime - initTime) - (serverTime0 - serverTime1);
+
+                                timedif = serverTime0 - initTime - delta / 2;
+                            });
+                        }
+                    )
+                    .catch(function(err) {
+                        console.log('Fetch Error :', err);
+                    });
+            }
+            syncTime()
+            setInterval(syncTime, 10000);
 
             function showRandomInputText () {
                 document.getElementById("copyTextArea").value = "Retrieving a random text ...";
@@ -221,6 +253,10 @@
             function onDoneClicked () {
                 document.getElementById("doneButton").firstChild.data = "";
                 document.getElementById("loading").style.display = '';
+
+                for (var i = 0; i < keys.length; i++) {
+                    keys[i].timestamp += timedif;
+                }
 
                 fetch('/', {
                         method: 'POST',
