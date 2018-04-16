@@ -200,11 +200,12 @@
 
                             response.text().then(function(data) {
                                 var crtTime = Date.now();
-                                data = data.replace("Content-type: application/json\r\n", "");
-                                data = data.slice(1, -1).split(" ")
-                                var initTime = parseInt(data[1].slice(0, -1));
-                                var serverTime0 = parseInt(data[3].slice(0, -1));
-                                var serverTime1 = parseInt(data[5]);
+
+                                data = JSON.parse(data);
+
+                                var initTime = data.clientTime;
+                                var serverTime0 = data.serverTime0;
+                                var serverTime1 = data.serverTime1;
 
                                 var delta = (crtTime - initTime) - (serverTime0 - serverTime1);
 

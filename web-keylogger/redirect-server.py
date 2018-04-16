@@ -1,34 +1,20 @@
-#!/usr/bin/python
-import BaseHTTPServer
-import sys
-import simplejson
+import flask
+from flask import Response
+from flask import Flask
 
-class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
-    def do_HEAD(self):
-        self.send_response(301)
-        self.send_header('Location', 'https://fitbit-sensors.cf');
-        self.end_headers()
+app = Flask(__name__)
 
-    def do_GET(self):
-        self.do_HEAD()
+@app.route("/index.html/", methods=['GET'])
+@app.route("/", methods=['GET'])
+def redirect_all():
+    resp = Response("", status = 301)
+    resp.headers["Location"] = "https://fitbit-sensors.cf"
 
-def main(HandlerClass=SimpleHTTPRequestHandler,
-         ServerClass=BaseHTTPServer.HTTPServer):
-    host = ''
-    port = 80
+    return resp
 
-    if len(sys.argv) == 2:
-        host = sys.argv[1]
-        print sys.argv[1]
 
-    server_address = (host, port)
-
-    httpd = ServerClass(server_address, HandlerClass)
-
-    sockaddr = httpd.socket.getsockname()
-    print "Serving HTTPS on", sockaddr[0], "port", sockaddr[1]
-
-    httpd.serve_forever()
+def main():
+    app.run(host = '0.0.0.0', threaded = True, port = 80)
 
 if __name__ == '__main__':
     main()

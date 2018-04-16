@@ -1,10 +1,12 @@
 #!/usr/bin/python
-import BaseHTTPServer
-import sys
-import json
+from flask import Flask
+from flask import jsonify
+from flask import request
+from flask import json
+from flask import Response
+import flask
 import MySQLdb
 import random
-import ssl
 import time
 import threading
 
@@ -17,6 +19,8 @@ ID = "id"
 CLIENT_TIME = "clientTime"
 SERVER_TIME0 = "serverTime0"
 SERVER_TIME1 = "serverTime1"
+SUCCESS = "success"
+FAIL = "fail"
 
 MIN_ID = 1000
 MAX_ID = 9999
@@ -37,6 +41,8 @@ def purge_pending_ids():
     pending_ids = [x for x in pending_ids if crt_time - x[1] <= TIMEOUT]
 
 purge_pending_ids()
+
+app = Flask(__name__)
 
 class DatabaseOperations:
     def random_id(self):
@@ -147,88 +153,61 @@ class DatabaseOperations:
 
             db.close()
 
-class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
-    dbops = DatabaseOperations()
+dbops = DatabaseOperations()
 
-    def _set_headers(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
+@app.route("/index.html/", methods = ['GET'])
+@app.route("/", methods = ['GET'])
+def get_index():
+    return open('index.html', 'r').read()
 
-    def do_GET(self):
-        crt_time = int(round(time.time() * 1000))
-        self._set_headers()
+@app.route("/index.html/id", methods = ['GET'])
+@app.route("/id", methods = ['GET'])
+def get_random_id():
+    rand_id = dbops.random_id()
 
-        if self.path == "/" or self.path == "/index.html":
-            indexStr = open('index.html', 'r').read()
-        elif self.path == "/password":
-            global passwords
-            indexStr = random.choice(passwords)
-        elif self.path == "/id":
-            indexStr = self.dbops.random_id()
-        elif len(self.path.split('=')) == 2 and self.path.split('=')[0][1:] == CLIENT_TIME:
-            client_time = int(self.path.split('=')[1])
-            print client_time
+    return str(rand_id)
 
-            self.send_header('Content-type', 'application/json')
-            self.wfile.write({CLIENT_TIME : client_time, \
+@app.route("/index.html/password", methods = ['GET'])
+@app.route("/password", methods = ['GET'])
+def get_random_password():
+    global passwords
+    return random.choice(passwords)
+
+@app.route("/index.html/clientTime=<client_time>", methods = ['GET'])
+@app.route("/clientTime=<client_time>", methods = ['GET'])
+def get_time(client_time):
+    crt_time = int(round(time.time() * 1000))
+
+    return jsonify({CLIENT_TIME : client_time, \
                 SERVER_TIME0 : crt_time, \
                 SERVER_TIME1 : int(round(time.time() * 1000))})
 
-            return
-        else:
-            indexStr = "Invalid path"
+@app.route('/index.html', methods = ['POST'])
+@app.route('/', methods = ['POST'])
+def post_data():
+    resp = None
 
-        self.wfile.write(indexStr)
+    if "application/json" in request.headers['Content-Type']:
+        print "JSON Message: " + json.dumps(request.json)
 
-    def do_POST(self):
-        r = self.receive_post_data()
-        if r:
-            self.send_response(200)
-        else:
-            self.send_response(400)
-        self.end_headers()
+        data = request.json
+        dbops.insert_data(data)
 
-    def receive_post_data(self):
-        remainbytes = int(self.headers['content-length'])
+        resp = Response(SUCCESS, status = 200)
+    else:
+        resp = Response(FAIL, status = 400)
 
-        data = json.loads(self.rfile.read(remainbytes))
-
-        print "{}".format(data)
-
-        self.dbops.insert_data(data)
-
-        return True
-
-def test(HandlerClass=SimpleHTTPRequestHandler,
-         ServerClass=BaseHTTPServer.HTTPServer):
-    host = ''
-    port = 443
-
-    if len(sys.argv) == 2:
-        host = sys.argv[1]
-        print sys.argv[1]
-
-    server_address = (host, port)
-
-    httpd = ServerClass(server_address, HandlerClass)
-    httpd.socket = ssl.wrap_socket (httpd.socket, keyfile='privkey.pem', \
-        certfile='./fullchain.pem', server_side=True)
-
-    sockaddr = httpd.socket.getsockname()
-    print "Serving HTTPS on", sockaddr[0], "port", sockaddr[1]
-
-    httpd.serve_forever()
+    return resp
 
 def main():
-
     global passwords
     with open("passwords") as f:
         passwords = f.readlines()
 
     passwords = [x.strip() for x in passwords]
 
-    test()
+    context = ('fullchain.pem', 'privkey.pem')
+    app.run(host = '0.0.0.0', ssl_context = context, threaded = True, port = 443)
 
 if __name__ == '__main__':
     main()
