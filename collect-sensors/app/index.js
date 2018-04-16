@@ -1,10 +1,8 @@
 import { Accelerometer } from "accelerometer";
 import { Gyroscope } from "gyroscope";
 import document from "document";
-import { me } from "appbit";
 import { peerSocket, MessageSocket } from "messaging";
 import * as messaging from "messaging";
-import { readFileSync, writeFileSync, unlinkSync } from "fs";
 import { display } from "display";
 
 import * as id from "./id";
@@ -26,8 +24,6 @@ var ARRAY_LIMIT = 2500;
 // display always on
 display.autoOff = false;
 
-let accelData = document.getElementById("accel-data");
-let gyroData = document.getElementById("gyro-data");
 let fullLabelVisible = false;
 
 let gyro = new Gyroscope();

@@ -1,6 +1,5 @@
 import { peerSocket, MessageSocket } from "messaging";
 import * as messaging from "messaging";
-import { outbox } from "file-transfer";
 
 console.log("Companion running");
 
