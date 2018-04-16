@@ -20,6 +20,21 @@
   text-length: 10;
 }
 
+.sync-class {
+  font-family: System-Regular;
+  text-anchor: middle;
+  fill: white;
+  text-length: 20;
+}
+
+.full-class {
+  font-family: System-Regular;
+  text-anchor: middle;
+  fill: white;
+  text-length: 20;
+  visibility: hidden;
+}
+
 .input-button {
   fill="#5b965b";
   font-family="System-Regular";

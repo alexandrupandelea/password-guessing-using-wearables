@@ -21,12 +21,14 @@ var ELEM_SIZE = 7 * 8 * 2;
 var RETRY_SEND_MS = 20;
 var SYNC_RETRY_SEND_MS = 200;
 var COLLECT_DATA_MS = 50;
+var ARRAY_LIMIT = 2500;
 
 // display always on
 display.autoOff = false;
 
 let accelData = document.getElementById("accel-data");
 let gyroData = document.getElementById("gyro-data");
+let fullLabelVisible = false;
 
 let gyro = new Gyroscope();
 let accel = new Accelerometer();
@@ -39,6 +41,7 @@ var timedif = 0;
 let doneHandle = -1;
 let sendDataHandle = -1
 var syncHandle = -1;
+var refreshHandle = -1;
 
 var accx = 0;
 var accy = 0;
@@ -47,17 +50,79 @@ var gyrox = 0;
 var gyroy = 0;
 var gyroz = 0;
 
+var showStart = true;
+
 accel.start();
 gyro.start();
 
 id.hideUI();
 
+//TODO: disable rather than hide
+document.getElementById("send-button").style.visibility = "hidden";
+
 function hideMainUI() {
   document.getElementById("send-button").style.visibility = "hidden";
+  document.getElementById("pause-button").style.visibility = "hidden";
+  document.getElementById("start-button").style.visibility = "hidden";
+  document.getElementById("reset-button").style.visibility = "hidden";
+  document.getElementById("full-label").style.visibility = "hidden";
+  fullLabelVisible = false;
 }
 
 function showMainUI() {
   document.getElementById("send-button").style.visibility = "visible";
+
+  /* if the sync-label is visible, reset will be shown when the sync is done */
+  if (document.getElementById("sync-label").style.visibility.localeCompare("visible") != 0)
+    document.getElementById("reset-button").style.visibility = "visible";
+
+  if (showStart) {
+    document.getElementById("start-button").style.visibility = "visible";
+  } else {
+    document.getElementById("pause-button").style.visibility = "visible";
+  }
+}
+
+let button = document.getElementById("reset-button");
+button.onactivate = function(evt) {
+  clearInterval(refreshHandle);
+  showStart = true;
+  document.getElementById("pause-button").style.visibility = "hidden";
+  document.getElementById("start-button").style.visibility = "visible";
+
+  fullLabelVisible = false;
+  document.getElementById("full-label").style.visibility = "hidden";
+  //TODO: disable rather than hide
+  document.getElementById("send-button").style.visibility = "hidden";
+
+  data = [];
+
+  /* delay reset until time is synced */
+  document.getElementById("reset-button").style.visibility = "hidden";
+  document.getElementById("sync-label").style.visibility = "visible";
+  syncHandle = setInterval(syncTime, SYNC_RETRY_SEND_MS);
+}
+
+let button = document.getElementById("start-button");
+button.onactivate = function(evt) {
+  showStart = false;
+  document.getElementById("start-button").style.visibility = "hidden";
+  document.getElementById("pause-button").style.visibility = "visible";
+
+  //TODO: enable rather than hide
+  document.getElementById("send-button").style.visibility = "visible";
+
+  refreshHandle = setInterval(refreshData, COLLECT_DATA_MS);
+}
+
+let button = document.getElementById("pause-button");
+button.style.visibility = "hidden"
+button.onactivate = function(evt) {
+  showStart = true;
+  document.getElementById("pause-button").style.visibility = "hidden";
+  document.getElementById("start-button").style.visibility = "visible";
+
+  clearInterval(refreshHandle);
 }
 
 let button = document.getElementById("done-button");
@@ -71,6 +136,7 @@ button.onclick = function(evt) {
            (data.length % MAX_ARRAY_ELEMS  == 0 ? 0 : 1);
 
   id.hideUI();
+
   var sentMessages = document.getElementById("sent-messages");
   sentMessages.textContent = parseInt(crtMsg / (msgsNr + 1) * 100) + "%";
   sentMessages.style.visibility = "visible";
@@ -148,6 +214,10 @@ messaging.peerSocket.onmessage = (evt) => {
   console.log("watch received" + evt.data);
 
   if (evt.data.hasOwnProperty('watchInit')) {
+    /* reset can now be used */
+    document.getElementById("reset-button").style.visibility = "visible";
+    document.getElementById("sync-label").style.visibility = "hidden";
+
     var delta = (crtTime - evt.data.watchInit) -
         (evt.data.phoneFinal - evt.data.phoneInit);
 
@@ -176,6 +246,10 @@ messaging.peerSocket.onmessage = (evt) => {
     /* Start a new session of collecting data */
     data = [];
     refreshHandle = setInterval(refreshData, COLLECT_DATA_MS);
+
+    /* delay reset until time is synced */
+    document.getElementById("reset-button").style.visibility = "hidden";
+    document.getElementById("sync-label").style.visibility = "visible";
     syncHandle = setInterval(syncTime, SYNC_RETRY_SEND_MS);
   } else if (crtMsg == msgsNr + 1) {
     showMainUI();
@@ -202,9 +276,23 @@ function refreshData() {
   data.push(gyroy);
   data.push(gyroz);
 
-  if (parseInt(data.length / 7) % 50 == 0)
-    console.log("Arr size " + (data.length/7) + " JS memory: " + memory.js.used);
+  if (parseInt(data.length / 7) % 50 == 0) {
+    /* Stop collecting as memory is full */
+    if (data.length >= ARRAY_LIMIT && !fullLabelVisible) {
+      clearInterval(refreshHandle);
+
+      fullLabelVisible = true;
+      document.getElementById("full-label").style.visibility = "visible";
+      if (showStart)
+        document.getElementById("start-button").style.visibility = "hidden";
+      else
+        document.getElementById("pause-button").style.visibility = "hidden";
+    }
+    console.log("Arr size " + (data.length) + " JS memory: " + memory.js.used+  "/" + memory.js.total);
+  }
 }
 
-var refreshHandle = setInterval(refreshData, COLLECT_DATA_MS);
+/* delay reset until time is synced */
+document.getElementById("reset-button").style.visibility = "hidden";
+document.getElementById("sync-label").style.visibility = "visible";
 syncHandle = setInterval(syncTime, SYNC_RETRY_SEND_MS);

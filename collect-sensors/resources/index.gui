@@ -4,8 +4,25 @@
     <set href="#text" attributeName="text-buffer" to="Send Data" />
     <set href="#text" attributeName="fill" to="white" />
   </use>
+  <use id="start-button" href="#square-button" x="59" y="90" height="75" width="230"
+    fill="blue" font-family="System-Regular" font-size="45">
+    <set href="#text" attributeName="text-buffer" to="Start" />
+    <set href="#text" attributeName="fill" to="white" />
+  </use>
+  <use id="pause-button" href="#square-button" x="59" y="90" height="75" width="230"
+    fill="orange" font-family="System-Regular" font-size="45">
+    <set href="#text" attributeName="text-buffer" to="Pause" />
+    <set href="#text" attributeName="fill" to="white" />
+  </use>
+  <use id="reset-button" href="#square-button" x="59" y="10" height="75" width="230"
+    fill="red" font-family="System-Regular" font-size="45">
+    <set href="#text" attributeName="text-buffer" to="Reset" />
+    <set href="#text" attributeName="fill" to="white" />
+  </use>
   <line id="sep-line" x1="0" y1="60" x2="348" y2="60" fill="#5b965b" stroke-width="2" />
   <text id="id-value" class="percentage" x="50%" y="30">1234</text>
+  <text id="sync-label" class="sync-class" x="50%" y="60">Syncing time ...</text>
+  <text id="full-label" class="full-class" x="50%" y="135">Mem full. Send/Reset</text>
   <use id="seven-button" href="#square-button" x="0" y="62" height="62" width="87"
     fill="#5b965b" font-family="System-Regular" font-size="45">
     <set href="#text" attributeName="text-buffer" to="7" />

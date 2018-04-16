@@ -30,6 +30,7 @@ export function showUI() {
   document.getElementById("sep-line").style.visibility = "visible";
   document.getElementById("id-value").style.visibility = "visible";
   document.getElementById("id-value").textContent = ""
+  value = ""
 }
 
 export function hideUI() {
