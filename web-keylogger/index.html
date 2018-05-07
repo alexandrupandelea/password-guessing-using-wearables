@@ -78,11 +78,11 @@
         }
 
         .read-more-state ~ .read-more-trigger:before {
-            content: 'Show more';
+            content: 'Show tutorial';
         }
 
         .read-more-state:checked ~ .read-more-trigger:before {
-            content: 'Show less';
+            content: 'Hide tutorial';
         }
 
         .read-more-trigger {
@@ -117,10 +117,19 @@
           <input type="checkbox" class="read-more-state" id="post-2" />
           <label for="post-2" class="read-more-trigger"></label>
             <ul class="read-more-wrap">
-                <li class="read-more-target">When "Done" is pressed, the keypresses are logged to a database</li>
-                <li class="read-more-target">After "Done" is pressed a new session is started</li>
-                <li class="read-more-target">"Reset" clears the collected data so far</li>
-                <li class="read-more-target">Remember to press "Send" on the Fitbit Ionic when done</li>
+                <p class="read-more-target"><b>Watch:</b></p>
+                <li class="read-more-target">Please wear the Fitbit Ionic on the <b>left hand</b></li>
+                <li class="read-more-target">When first launching the app please wait for time syncing to be done</li>
+                <li class="read-more-target">The <i>Reset</i> button clears currently collected data on the watch pauses storing sensor data</li>
+                <li class="read-more-target">The <i>Start</i> button begins collecting data and temporarily storing it on the watch, not clearing any previous data</li>
+                <li class="read-more-target">The <i>Pause</i> button just temporarily interrupts the collection of data, not clearing any previous data</li>
+                <li class="read-more-target">The <i>Done</i> stops collecting data and shows an interface that awaits an id, which is shown in the web client.</li>
+                <li class="read-more-target">When the id is inserted, the watch begins sending the data to the server. When it is done sending it clears previously stored data and resumes collecting</li>
+                <p class="read-more-target"><b>Web client</b></p>
+                <li class="read-more-target">With the watch collecting data, write the text from the left box into the right box</li>
+                <li class="read-more-target">If a mistake is done, please press <i>Reset</i> both here and on the watch</li>
+                <li class="read-more-target">When finished, press Done, insert the id on the watch and send the watch data to the server</li>
+                <li class="read-more-target">Repeat as many times as you want :)</li>
             </ul>
         </div>
 
