@@ -9,6 +9,7 @@ import MySQLdb
 import random
 import time
 import threading
+import numbers
 
 TIMESTAMP = "timestamp"
 KEYS = "keys"
@@ -75,37 +76,37 @@ class DatabaseOperations:
             (not KEYCODE in key_entry):
             return False
 
-        if not isinstance(key_entry[TIMESTAMP], int):
+        if not isinstance(key_entry[TIMESTAMP], numbers.Number):
             return False
 
         if len(key_entry[KEY]) != 1:
             return False
 
-        if not isinstance(key_entry[KEYCODE], int):
+        if not isinstance(key_entry[KEYCODE], numbers.Number):
             return False
 
         return True
 
     def correct_sensor_entry(self, data, index):
-        if not isinstance(data[SENSORS][index], int):
+        if not isinstance(data[SENSORS][index], numbers.Number):
             return False
 
-        if not isinstance(data[SENSORS][index + 1], float):
+        if not isinstance(data[SENSORS][index + 1], numbers.Number):
             return False
 
-        if not isinstance(data[SENSORS][index + 2], float):
+        if not isinstance(data[SENSORS][index + 2], numbers.Number):
             return False
 
-        if not isinstance(data[SENSORS][index + 3], float):
+        if not isinstance(data[SENSORS][index + 3], numbers.Number):
             return False
 
-        if not isinstance(data[SENSORS][index + 4], float):
+        if not isinstance(data[SENSORS][index + 4], numbers.Number):
             return False
 
-        if not isinstance(data[SENSORS][index + 5], float):
+        if not isinstance(data[SENSORS][index + 5], numbers.Number):
             return False
 
-        if not isinstance(data[SENSORS][index + 6], float):
+        if not isinstance(data[SENSORS][index + 6], numbers.Number):
             return False
 
         return True
@@ -124,7 +125,7 @@ class DatabaseOperations:
 
             for key_entry in data[KEYS]:
                 if self.correct_key_entry(key_entry):
-                    sql += "(" + str(data[ID]) + ", " + str(key_entry[TIMESTAMP]) + ", '" + \
+                    sql += "(" + str(data[ID]) + ", " + '%f' % key_entry[TIMESTAMP] + ", '" + \
                         key_entry[KEY] + "', " + str(key_entry[KEYCODE]) + "),"
 
         elif SENSORS in data.keys() and len(data[SENSORS]) > 0 and \
@@ -134,12 +135,12 @@ class DatabaseOperations:
             db = MySQLdb.connect("localhost","root","","datadb")
             cursor = db.cursor()
 
-            for i in range(0, len(data[SENSORS]), NR_SENSOR_DATA):
+            for i in range(0, len(data[SENSORS]) - 1, NR_SENSOR_DATA):
                 if self.correct_sensor_entry(data, i):
-                    sql += "(" + str(data[SENSORS][-1]) + ", " + str(data[SENSORS][i]) + ", " + \
-                    str(data[SENSORS][i + 1]) + ", " + str(data[SENSORS][i + 2]) + ", " + \
-                    str(data[SENSORS][i + 3]) + ", " + str(data[SENSORS][i + 4]) + ", " + \
-                    str(data[SENSORS][i + 5]) + ", " + str(data[SENSORS][i + 6]) + "),"
+                    sql += "(" + str(data[SENSORS][-1]) + ", " + '%f' % data[SENSORS][i] + ", " + \
+                    '%f' % data[SENSORS][i + 1] + ", " + '%f' % data[SENSORS][i + 2] + ", " + \
+                    '%f' % data[SENSORS][i + 3] + ", " + '%f' % data[SENSORS][i + 4] + ", " + \
+                    '%f' % data[SENSORS][i + 5] + ", " + '%f' % data[SENSORS][i + 6] + "),"
 
         if sql != "":
             # remove last ','
