@@ -130,7 +130,7 @@ function fetch_time() {
             var serverTime0 = data.serverTime0;
             var serverTime1 = data.serverTime1;
 
-            var delta = (crtTime - initTime) - (serverTime0 - serverTime1);
+            var delta = (crtTime - initTime) - (serverTime1 - serverTime0);
 
             timedif = serverTime0 - initTime - delta / 2;
             console.log("timedif " + timedif);
