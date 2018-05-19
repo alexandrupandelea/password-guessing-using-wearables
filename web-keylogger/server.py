@@ -62,6 +62,7 @@ class DatabaseOperations:
             if retries == 0:
                 break
 
+            random.seed(time.time())
             new_id= random.randint(MIN_ID, MAX_ID)
             if new_id not in existing_ids and new_id not in pending_ids:
                 # reserve this id for TIMEOUT seconds
@@ -172,6 +173,8 @@ def get_random_id():
 @app.route("/password", methods = ['GET'])
 def get_random_password():
     global passwords
+    random.seed(time.time())
+
     return random.choice(passwords)
 
 @app.route("/index.html/clientTime=<client_time>", methods = ['GET'])
@@ -208,7 +211,7 @@ def main():
     passwords = [x.strip() for x in passwords]
 
     context = ('fullchain.pem', 'privkey.pem')
-    app.run(host = '0.0.0.0', ssl_context = context, threaded = True, port = 443)
+    app.run(host = '0.0.0.0', ssl_context = context, processes = 10, port = 443)
 
 if __name__ == '__main__':
     main()
