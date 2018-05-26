@@ -33,6 +33,11 @@ PRIORITY = 1
 passwords = []
 pending_ids = []
 
+with open("passwords") as f:
+    passwords = f.readlines()
+
+passwords = [x.strip() for x in passwords]
+
 def purge_pending_ids():
     global pending_ids
 
@@ -204,12 +209,6 @@ def post_data():
     return resp
 
 def main():
-    global passwords
-    with open("passwords") as f:
-        passwords = f.readlines()
-
-    passwords = [x.strip() for x in passwords]
-
     context = ('fullchain.pem', 'privkey.pem')
     app.run(host = '0.0.0.0', ssl_context = context, processes = 10, port = 443)
 
