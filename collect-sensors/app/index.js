@@ -66,8 +66,6 @@ function hideMainUI() {
 }
 
 function showMainUI() {
-  document.getElementById("send-button").style.visibility = "visible";
-
   /* if the sync-label is visible, reset will be shown when the sync is done */
   if (document.getElementById("sync-label").style.visibility.localeCompare("visible") != 0)
     document.getElementById("reset-button").style.visibility = "visible";
@@ -76,6 +74,7 @@ function showMainUI() {
     document.getElementById("start-button").style.visibility = "visible";
   } else {
     document.getElementById("pause-button").style.visibility = "visible";
+    document.getElementById("send-button").style.visibility = "visible";
   }
 }
 
@@ -241,13 +240,13 @@ messaging.peerSocket.onmessage = (evt) => {
 
     /* Start a new session of collecting data */
     data = [];
-    refreshHandle = setInterval(refreshData, COLLECT_DATA_MS);
 
     /* delay reset until time is synced */
     document.getElementById("reset-button").style.visibility = "hidden";
     document.getElementById("sync-label").style.visibility = "visible";
     syncHandle = setInterval(syncTime, SYNC_RETRY_SEND_MS);
   } else if (crtMsg == msgsNr + 1) {
+    showStart = true;
     showMainUI();
     sentMessages.style.visibility = "hidden";
   }
