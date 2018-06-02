@@ -14,6 +14,11 @@ GYROZ = 6
 
 LARGE_TIMEDIF = 1000
 
+left_hand_keys = ['q', 'w', 'e', 'r', 't', 'a', 's', 'd', 'f', 'g', 'z',
+                  'x', 'c', 'v', 'b', '1', '2', '3', '4', '5']
+right_hand_keys = ['y', 'u', 'i', 'o', 'p', 'h', 'j', 'k', 'l', 'n', 'm',
+                  '6', '7', '8', '9', '0']
+
 pressed_keys = {}
 sensor_data = {}
 
@@ -140,6 +145,19 @@ def plot(input_id):
     create_figure(time, gyrox, gyroy, gyroz, text, "Gyroscope", chars, text_time)
 
     plt.show()
+
+# convert the data dictionaries into lists
+# to be able to use them with pandas
+def dict_as_list(dic):
+    res = []
+    for key in dic.keys():
+        for tupl in dic[key]:
+            container = [key]
+            for tuple_elem in tupl:
+                container.append(tuple_elem)
+            res.append(container)
+
+    return res
 
 def main():
     if len(sys.argv) == 2 and sys.argv[1] == "help":
