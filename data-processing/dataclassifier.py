@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from dataparse import *
+from dataparser import *
 import pandas as pd
 import matplotlib.pylab as plt
 import seaborn as sns
