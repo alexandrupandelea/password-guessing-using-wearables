@@ -2,6 +2,7 @@
 import MySQLdb
 import sys
 import matplotlib.pyplot as plt
+from argparse import ArgumentParser
 
 TIMESTAMP = 0
 KEY = 1
@@ -160,25 +161,28 @@ def dict_as_list(dic):
     return res
 
 def main():
-    if len(sys.argv) == 2 and sys.argv[1] == "help":
-        print "clean - remove inconsistent inputs from the database"
-        print "plot id - plots the input with the corresponding id"
+    p = ArgumentParser()
+    p.add_argument('-c', '--clean', action = 'store_true',
+        help = 'remove inconsistent inputs from the database')
+    p.add_argument('-p', '--plot', type = int,
+        help = 'Plot the data for a specific input')
+    p.add_argument('-s', '--stats', action = 'store_true',
+        help = 'show data statistics')
 
-        return
+    args = p.parse_args()
 
     build_pressed_keys_dict()
     build_sensor_data_dict()
 
-    if len(sys.argv) == 2 and sys.argv[1] == "clean":
+    if args.clean:
         clean_database()
 
-        return
+    if args.stats:
+        print "Watch inputs nr: " + str(len(sensor_data)) + \
+            "\nDesktop inputs nr: " + str(len(pressed_keys))
 
-    if len(sys.argv) == 3 and sys.argv[1] == "plot" and sys.argv[2].isdigit():
-        plot(int(sys.argv[2]))
-
-    print "Watch inputs nr: " + str(len(sensor_data)) + "\nDesktop inputs nr: " + str(len(pressed_keys))
-
+    if args.plot != None:
+        plot(int(args.plot))
 
 if __name__ == '__main__':
     main()
