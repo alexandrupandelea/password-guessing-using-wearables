@@ -160,6 +160,55 @@ def dict_as_list(dic):
 
     return res
 
+def match_passwords():
+    y = {}
+
+    for key in pressed_keys.keys():
+        text = ""
+        full_text = ""
+        all_digits = True
+
+        for tupl in pressed_keys[key]:
+            if tupl[KEY] in left_hand_keys:
+                text += tupl[KEY]
+            full_text += tupl[KEY]
+
+            if not tupl[KEY].isdigit():
+                all_digits = False
+
+        if all_digits == True:
+            text = full_text
+
+        y[text] = []
+
+    for key in pressed_keys.keys():
+        left_hand_text = ""
+        full_text = ""
+        all_digits = True
+
+        for tupl in pressed_keys[key]:
+            if tupl[KEY] in left_hand_keys:
+                left_hand_text += tupl[KEY]
+            full_text += tupl[KEY]
+
+            if not tupl[KEY].isdigit():
+                all_digits = False
+
+        if all_digits == True:
+            left_hand_text = full_text
+
+        if full_text not in y[left_hand_text]:
+            y[left_hand_text].append(full_text)
+
+    avg = 0
+    for key in y:
+        if len(y[key]) == 1:
+            avg += 1
+
+    print str(round(100 * float(avg) / len(y.keys()), 2)) + \
+        "% of inputs can be identified wit only the keys pressed by the left hand"
+
+
 def main():
     p = ArgumentParser()
     p.add_argument('-c', '--clean', action = 'store_true',
@@ -178,6 +227,8 @@ def main():
         clean_database()
 
     if args.stats:
+        match_passwords()
+
         print "Watch inputs nr: " + str(len(sensor_data)) + \
             "\nDesktop inputs nr: " + str(len(pressed_keys))
 
