@@ -39,15 +39,15 @@ def decision_tree_classifier(X, y, test_size):
 
     print(classification_report(y_test, cl.predict(X_test)))
 
-def k_nearest_neighbors_classifier(X, y, test_size):
+def k_nearest_neighbors_classifier(X, y, test_size, k):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = test_size)
 
-    cl = KNeighborsClassifier(n_neighbors = 5)
+    cl = KNeighborsClassifier(n_neighbors = k)
     cl.fit(X_train, y_train)
 
     print(classification_report(y_test, cl.predict(X_test)))
 
-def nr_pressed_keys_classifier(relevant_features, test_size, classifier):
+def nr_pressed_keys_classifier(args, classifier):
     y = {}
 
     for key in pressed_keys.keys():
@@ -71,16 +71,16 @@ def nr_pressed_keys_classifier(relevant_features, test_size, classifier):
 
     y = pd.Series(y)
 
-    X = get_features(y, relevant_features)
+    X = get_features(y, args.relevant_features)
 
     if classifier == DECISION_TREE:
-        decision_tree_classifier(X, y, test_size)
+        decision_tree_classifier(X, y, args.test_size)
     elif classifier == KNN:
-        k_nearest_neighbors_classifier(X, y, test_size)
+        k_nearest_neighbors_classifier(X, y, args.test_size, args.k_val)
     else:
         print "please use a valid classifier"
 
-def original_text_classifier(relevant_features, test_size, classifier):
+def original_text_classifier(args, classifier):
     y = {}
 
     for key in pressed_keys.keys():
@@ -105,12 +105,12 @@ def original_text_classifier(relevant_features, test_size, classifier):
 
     y = pd.Series(y)
 
-    X = get_features(y, relevant_features)
+    X = get_features(y, args.relevant_features)
 
     if classifier == DECISION_TREE:
-        decision_tree_classifier(X, y, test_size)
+        decision_tree_classifier(X, y, args.test_size)
     elif classifier == KNN:
-        k_nearest_neighbors_classifier(X, y, test_size)
+        k_nearest_neighbors_classifier(X, y, args.test_size, args.k_val)
     else:
         print "please use a valid classifier"
 
@@ -127,6 +127,8 @@ def main():
     p.add_argument('-rf', '--relevant_features', action = 'store_true')
     p.add_argument('-ts', '--test_size', type = float, default = 0.2,
         help='The percentage from the dataset to be used for testing')
+    p.add_argument('-k', '--k_val', type = int, default = 3,
+        help='value of k for K-nearest-neighbors')
 
     args = p.parse_args()
 
@@ -134,11 +136,9 @@ def main():
     build_sensor_data_dict()
 
     if args.original_text_classifier:
-        original_text_classifier(args.relevant_features,
-            args.test_size, args.original_text_classifier)
+        original_text_classifier(args, args.original_text_classifier)
     elif args.key_number_classifier:
-        nr_pressed_keys_classifier(args.relevant_features,
-            args.test_size, args.key_number_classifier)
+        nr_pressed_keys_classifier(args, args.key_number_classifier)
     else:
         print "Please choose a classifier"
 
