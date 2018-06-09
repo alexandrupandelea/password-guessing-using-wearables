@@ -16,8 +16,8 @@ from argparse import ArgumentParser
 DECISION_TREE = 'dt'
 KNN = 'knn'
 
-def get_features(y, relevant_features):
-    sensor_data_list = dict_as_list(sensor_data)
+def get_features(y, relevant_features, data):
+    sensor_data_list = dict_as_list(data)
     df = pd.DataFrame(sensor_data_list,
         columns=['id', 'time', 'accx', 'accy','accz', 'gyrox', 'gyroy', 'gyroz'])
 
@@ -71,7 +71,7 @@ def nr_pressed_keys_classifier(args, classifier):
 
     y = pd.Series(y)
 
-    X = get_features(y, args.relevant_features)
+    X = get_features(y, args.relevant_features, sensor_data)
 
     if classifier == DECISION_TREE:
         decision_tree_classifier(X, y, args.test_size)
@@ -81,31 +81,9 @@ def nr_pressed_keys_classifier(args, classifier):
         print "please use a valid classifier"
 
 def original_text_classifier(args, classifier):
-    y = {}
+    y = pd.Series(single_pressed_keys)
 
-    for key in pressed_keys.keys():
-        text = ""
-        full_text = ""
-        all_digits = True
-
-        for tupl in pressed_keys[key]:
-            full_text += tupl[KEY]
-
-            if tupl[KEY] in left_hand_keys:
-                text += tupl[KEY]
-            if not tupl[KEY].isdigit():
-                all_digits = False
-
-        # we made the assumption that if the text is
-        # all digits, then it's written only with the left hand
-        if all_digits == True:
-            y[key] = full_text
-        else:
-            y[key] = text
-
-    y = pd.Series(y)
-
-    X = get_features(y, args.relevant_features)
+    X = get_features(y, args.relevant_features, single_sensor_data)
 
     if classifier == DECISION_TREE:
         decision_tree_classifier(X, y, args.test_size)
@@ -129,11 +107,14 @@ def main():
         help='The percentage from the dataset to be used for testing')
     p.add_argument('-k', '--k_val', type = int, default = 3,
         help='value of k for K-nearest-neighbors')
+    p.add_argument('-t', '--time_margin', type = int, default = 250,
+        help = 'Time margin for a key in ms')
 
     args = p.parse_args()
 
     build_pressed_keys_dict()
     build_sensor_data_dict()
+    build_single_dicts(args.time_margin)
 
     if args.original_text_classifier:
         original_text_classifier(args, args.original_text_classifier)

@@ -22,6 +22,8 @@ right_hand_keys = ['y', 'u', 'i', 'o', 'p', 'h', 'j', 'k', 'l', 'n', 'm',
 
 pressed_keys = {}
 sensor_data = {}
+single_sensor_data = {}
+single_pressed_keys = {}
 
 def build_pressed_keys_dict():
     sql = "select * from pressedKeys"
@@ -52,6 +54,33 @@ def build_sensor_data_dict():
         else:
             sensor_data[data[i][0]] = [(data[i][1], data[i][2], data[i][3],
                 data[i][4], data[i][5], data[i][6], data[i][7])]
+
+def build_single_dicts(time_margin):
+    crt_id = 0
+
+    for key_id in pressed_keys.keys():
+        all_digits = True
+        for text_tuple in pressed_keys[key_id]:
+            if not text_tuple[KEY].isdigit():
+                all_digits = False
+
+        for text_tuple in pressed_keys[key_id]:
+            if text_tuple[KEY] not in left_hand_keys and not all_digits:
+                continue
+
+            single_sensor_data[crt_id] = []
+            single_pressed_keys[crt_id] = text_tuple[KEY]
+
+            for sensor_tuple in sensor_data[key_id]:
+                if sensor_tuple[TIMESTAMP] >= text_tuple[TIMESTAMP] - time_margin and \
+                    sensor_tuple[TIMESTAMP] <= text_tuple[TIMESTAMP] + time_margin:
+                        single_sensor_data[crt_id].append(sensor_tuple)
+
+            if len(single_sensor_data[crt_id]) == 0:
+                del single_sensor_data[crt_id]
+                del single_pressed_keys[crt_id]
+
+            crt_id += 1
 
 def delete_input_from_table(input_id, table_name):
     sql = "delete from " + table_name + " where id=" + str(input_id)
@@ -208,13 +237,14 @@ def match_passwords():
     print str(round(100 * float(avg) / len(y.keys()), 2)) + \
         "% of inputs can be identified wit only the keys pressed by the left hand"
 
-
 def main():
     p = ArgumentParser()
     p.add_argument('-c', '--clean', action = 'store_true',
         help = 'remove inconsistent inputs from the database')
     p.add_argument('-p', '--plot', type = int,
         help = 'Plot the data for a specific input')
+    p.add_argument('-t', '--time_margin', type = int, default = 250,
+        help = 'Time margin for a key in ms')
     p.add_argument('-s', '--stats', action = 'store_true',
         help = 'show data statistics')
 
@@ -222,6 +252,7 @@ def main():
 
     build_pressed_keys_dict()
     build_sensor_data_dict()
+    build_single_dicts(args.time_margin)
 
     if args.clean:
         clean_database()
