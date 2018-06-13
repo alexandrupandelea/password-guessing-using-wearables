@@ -11,10 +11,12 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import classification_report
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 from argparse import ArgumentParser
 
 DECISION_TREE = 'dt'
 KNN = 'knn'
+GRADIENT_BOOSTING = 'gb'
 
 def get_features(y, relevant_features, data):
     sensor_data_list = dict_as_list(data)
@@ -47,6 +49,14 @@ def k_nearest_neighbors_classifier(X, y, test_size, k):
 
     print(classification_report(y_test, cl.predict(X_test)))
 
+def gradient_boosting_classifier(X, y, test_size, n_estimators, learning_rate):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = test_size)
+
+    cl = GradientBoostingClassifier(n_estimators = n_estimators, learning_rate = learning_rate)
+    cl.fit(X_train, y_train)
+
+    print(classification_report(y_test, cl.predict(X_test)))
+
 def nr_pressed_keys_classifier(args, classifier):
     y = get_nr_pressed_key_classes()
     y = pd.Series(y)
@@ -57,6 +67,9 @@ def nr_pressed_keys_classifier(args, classifier):
         decision_tree_classifier(X, y, args.test_size)
     elif classifier == KNN:
         k_nearest_neighbors_classifier(X, y, args.test_size, args.k_val)
+    elif classifier == GRADIENT_BOOSTING:
+        gradient_boosting_classifier(X, y, args.test_size,
+            args.n_estimators, args.learning_rate)
     else:
         print "please use a valid classifier"
 
@@ -69,19 +82,24 @@ def original_text_classifier(args, classifier):
         decision_tree_classifier(X, y, args.test_size)
     elif classifier == KNN:
         k_nearest_neighbors_classifier(X, y, args.test_size, args.k_val)
+    elif classifier == GRADIENT_BOOSTING:
+        gradient_boosting_classifier(X, y, args.test_size,
+            args.n_estimators, args.learning_rate)
     else:
         print "please use a valid classifier"
 
 def main():
     p = ArgumentParser()
     p.add_argument('-otc', '--original_text_classifier', dest = 'original_text_classifier',
-        action = 'store', choices = [DECISION_TREE, KNN],
+        action = 'store', choices = [DECISION_TREE, KNN, GRADIENT_BOOSTING],
         help='Recover original text classifier. Choose classifier type: \
-        dt Decision Tree classifier; knn K-nearest-neighbor classifier')
+        dt Decision Tree classifier; knn K-nearest-neighbor classifier; \
+        gb Gradient Boosting classifier')
     p.add_argument('-knc', '--key_number_classifier', dest = 'key_number_classifier',
-        action = 'store', choices = [DECISION_TREE, KNN],
+        action = 'store', choices = [DECISION_TREE, KNN, GRADIENT_BOOSTING],
         help='Detect the number of pressed keys .Choose classifier type: \
-        dt Decision Tree classifier; knn K-nearest-neighbor classifier')
+        dt Decision Tree classifier; knn K-nearest-neighbor classifier; \
+        gb Gradient Boosting classifier')
     p.add_argument('-rf', '--relevant_features', action = 'store_true')
     p.add_argument('-ts', '--test_size', type = float, default = 0.2,
         help='The percentage from the dataset to be used for testing')
@@ -89,6 +107,8 @@ def main():
         help='value of k for K-nearest-neighbors')
     p.add_argument('-t', '--time_margin', type = int, default = 250,
         help = 'Time margin for a key in ms')
+    p.add_argument('-lr', '--learning_rate', type = float, default = 0.1)
+    p.add_argument('-ne', '--n_estimators', type = int, default = 100)
 
     args = p.parse_args()
 
