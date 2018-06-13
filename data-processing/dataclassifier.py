@@ -48,27 +48,7 @@ def k_nearest_neighbors_classifier(X, y, test_size, k):
     print(classification_report(y_test, cl.predict(X_test)))
 
 def nr_pressed_keys_classifier(args, classifier):
-    y = {}
-
-    for key in pressed_keys.keys():
-        text = ""
-        nr_pressed_keys = 0
-        all_digits = True
-
-        for tupl in pressed_keys[key]:
-            text += tupl[KEY]
-            if tupl[KEY] in left_hand_keys:
-                nr_pressed_keys += 1
-            if not tupl[KEY].isdigit():
-                all_digits = False
-
-        # we made the assumption that if the text is
-        # all digits, then it's written only with the left hand
-        if all_digits == True:
-            nr_pressed_keys = len(text)
-
-        y[key] = nr_pressed_keys
-
+    y = get_nr_pressed_key_classes()
     y = pd.Series(y)
 
     X = get_features(y, args.relevant_features, sensor_data)

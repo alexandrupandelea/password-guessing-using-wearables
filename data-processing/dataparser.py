@@ -189,6 +189,53 @@ def dict_as_list(dic):
 
     return res
 
+# convert the data dictionaries into lists
+# to be used without the ids
+def dict_as_list_without_id(dic):
+    res = []
+    for key in dic.keys():
+        # use a separate list for each axis of both sensors
+        elem = [[] for x in range(0,6)]
+
+        for tupl in dic[key]:
+            elem[0].append(tupl[1])
+            elem[1].append(tupl[2])
+            elem[2].append(tupl[3])
+            elem[3].append(tupl[4])
+            elem[4].append(tupl[5])
+            elem[5].append(tupl[6])
+
+        res.append(elem)
+
+    return res
+
+def get_nr_pressed_key_classes():
+    y = {}
+
+    if pressed_keys == {}:
+        build_pressed_keys_dict()
+
+    for key in pressed_keys.keys():
+        text = ""
+        nr_pressed_keys = 0
+        all_digits = True
+
+        for tupl in pressed_keys[key]:
+            text += tupl[KEY]
+            if tupl[KEY] in left_hand_keys:
+                nr_pressed_keys += 1
+            if not tupl[KEY].isdigit():
+                all_digits = False
+
+        # we made the assumption that if the text is
+        # all digits, then it's written only with the left hand
+        if all_digits == True:
+            nr_pressed_keys = len(text)
+
+        y[key] = nr_pressed_keys
+
+    return y
+
 def match_passwords():
     y = {}
 
