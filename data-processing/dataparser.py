@@ -2,6 +2,7 @@
 import MySQLdb
 import sys
 import matplotlib.pyplot as plt
+from scipy.signal import butter, lfilter
 from argparse import ArgumentParser
 
 TIMESTAMP = 0
@@ -15,6 +16,10 @@ GYROZ = 6
 
 LARGE_TIMEDIF = 1000
 
+order = 6
+fs = 10.0       # sample rate, Hz
+cutoff = 3.667  # desired cutoff frequency of the filter, Hz
+
 left_hand_keys = ['q', 'w', 'e', 'r', 't', 'a', 's', 'd', 'f', 'g', 'z',
                   'x', 'c', 'v', 'b', '1', '2', '3', '4', '5']
 right_hand_keys = ['y', 'u', 'i', 'o', 'p', 'h', 'j', 'k', 'l', 'n', 'm',
@@ -24,6 +29,40 @@ pressed_keys = {}
 sensor_data = {}
 single_sensor_data = {}
 single_pressed_keys = {}
+
+def butter_lowpass(cutoff, fs, order):
+    nyq = 0.5 * fs
+    normal_cutoff = cutoff / nyq
+    b, a = butter(order, normal_cutoff, btype = 'low', analog=False)
+    return b, a
+
+def butter_lowpass_filter(data, cutoff, fs, order):
+    b, a = butter_lowpass(cutoff, fs, order)
+    y = lfilter(b, a, data)
+    return y
+
+def filter_sensor_data():
+    for key in sensor_data.keys():
+        # use a separate list to filter each axis
+        # of both sensors
+        elem = [[] for x in range(0,6)]
+
+        for sensor_tuple in sensor_data[key]:
+            elem[0].append(sensor_tuple[1])
+            elem[1].append(sensor_tuple[2])
+            elem[2].append(sensor_tuple[3])
+            elem[3].append(sensor_tuple[4])
+            elem[4].append(sensor_tuple[5])
+            elem[5].append(sensor_tuple[6])
+
+        # apply low-pass filter to each axis
+        for i in range(0, 6):
+            elem[i] = butter_lowpass_filter(elem[i], cutoff, fs, order)
+
+        for i in range(0, len(sensor_data[key])):
+            sensor_data[key][i] = (sensor_data[key][i][TIMESTAMP],
+                elem[0][i], elem[1][i], elem[2][i],
+                elem[3][i], elem[4][i], elem[5][i])
 
 def build_pressed_keys_dict():
     sql = "select * from pressedKeys"
@@ -54,6 +93,9 @@ def build_sensor_data_dict():
         else:
             sensor_data[data[i][0]] = [(data[i][1], data[i][2], data[i][3],
                 data[i][4], data[i][5], data[i][6], data[i][7])]
+
+    # apply low-pass filter to the sensor data
+    filter_sensor_data()
 
 def build_single_dicts(time_margin):
     crt_id = 0
