@@ -278,20 +278,53 @@ def get_nr_pressed_key_classes():
 
     return y
 
+# compute several statistics related to the data
+def averages():
+    avg_typying = 0
+    total_chars = 0
+    total_readings = 0
+
+    for key in pressed_keys.keys():
+        avg_typying += pressed_keys[key][len(pressed_keys[key]) - 1][TIMESTAMP] -\
+            pressed_keys[key][0][TIMESTAMP]
+
+        total_chars += len(pressed_keys[key])
+
+    for key in sensor_data.keys():
+        total_readings += len(sensor_data[key])
+
+    avg_typying = float(avg_typying) / len(pressed_keys.keys()) / 1000
+    avg_chars = float(total_chars) / len(pressed_keys.keys())
+    avg_readings = float(total_readings) / len(sensor_data.keys())
+
+    print "It takes on average " + str(round(avg_typying, 2)) + " seconds to type a password"
+
+    print "A password has on average " + str(round(avg_chars, 2)) + " characters"
+
+    print str(total_chars) + " characters pressed"
+
+    print str(round(avg_readings, 2)) + " average sensor readings \ input"
+
+    print str(total_readings * 6) + " values obtained from the sensors in total"
+
 def match_passwords():
     y = {}
 
-    for key in pressed_keys.keys():
+    with open("../web-keylogger/passwords") as f:
+        passwords = f.readlines()
+        passwords = [x.split('\n')[0] for x in passwords]
+
+    for password in passwords:
         text = ""
         full_text = ""
         all_digits = True
 
-        for tupl in pressed_keys[key]:
-            if tupl[KEY] in left_hand_keys:
-                text += tupl[KEY]
-            full_text += tupl[KEY]
+        for char in password:
+            if char in left_hand_keys:
+                text += char
+            full_text += char
 
-            if not tupl[KEY].isdigit():
+            if not char.isdigit():
                 all_digits = False
 
         if all_digits == True:
@@ -299,17 +332,17 @@ def match_passwords():
 
         y[text] = []
 
-    for key in pressed_keys.keys():
+    for password in passwords:
         left_hand_text = ""
         full_text = ""
         all_digits = True
 
-        for tupl in pressed_keys[key]:
-            if tupl[KEY] in left_hand_keys:
-                left_hand_text += tupl[KEY]
-            full_text += tupl[KEY]
+        for char in password:
+            if char in left_hand_keys:
+                left_hand_text += char
+            full_text += char
 
-            if not tupl[KEY].isdigit():
+            if not char.isdigit():
                 all_digits = False
 
         if all_digits == True:
@@ -324,7 +357,7 @@ def match_passwords():
             avg += 1
 
     print str(round(100 * float(avg) / len(y.keys()), 2)) + \
-        "% of inputs can be identified wit only the keys pressed by the left hand"
+        "% of inputs can be identified with only the keys pressed by the left hand"
 
 def main():
     p = ArgumentParser()
@@ -348,6 +381,7 @@ def main():
 
     if args.stats:
         match_passwords()
+        averages()
 
         print "Watch inputs nr: " + str(len(sensor_data)) + \
             "\nDesktop inputs nr: " + str(len(pressed_keys))
