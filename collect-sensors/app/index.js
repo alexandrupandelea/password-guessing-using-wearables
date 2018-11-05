@@ -18,16 +18,17 @@ var MAX_ARRAY_ELEMS = 60;
 var ELEM_SIZE = 7 * 8 * 2;
 var RETRY_SEND_MS = 20;
 var SYNC_RETRY_SEND_MS = 200;
-var COLLECT_DATA_MS = 50;
-var ARRAY_LIMIT = 2500;
+var COLLECT_DATA_MS = 1;
+var ARRAY_LIMIT = 800;
+var FREQUENCY = 40;
 
 // display always on
 display.autoOff = false;
 
 let fullLabelVisible = false;
 
-let gyro = new Gyroscope();
-let accel = new Accelerometer();
+let gyro = new Gyroscope({ frequency: 40 });
+let accel = new Accelerometer({ frequency: 40 });
 
 let data = [];
 
@@ -148,6 +149,20 @@ sendButton.onclick = function(evt) {
   hideMainUI();
   id.showUI();
 
+  var new_data = []
+  for (var i = 0; i < data.length; i += 3) {
+    new_data.push(data[i])
+    /* copy accel info */
+    new_data.push(data[i + 1].x ? data[i + 1].x : 0)
+    new_data.push(data[i + 1].y ? data[i + 1].y : 0)
+    new_data.push(data[i + 1].z ? data[i + 1].z : 0)
+    /* copy gyro info */
+    new_data.push(data[i + 2].x ? data[i + 2].x : 0)
+    new_data.push(data[i + 2].y ? data[i + 2].y : 0)
+    new_data.push(data[i + 2].z ? data[i + 2].z : 0)
+  }
+  data = new_data
+
   /* update timestamps with the difference between the
    * watch and the server
    */
@@ -160,7 +175,7 @@ sendButton.onclick = function(evt) {
 
 function sendDataSlice() {
   if (peerSocket.readyState === peerSocket.OPEN) {
-    console.log("sent msg");
+    console.log("watch sent slice");
 
     /* send a number of MAX_ARRAY_ELEMS items in the array */
     if (crtMsg * MAX_ARRAY_ELEMS + MAX_ARRAY_ELEMS >= data.length)
@@ -175,7 +190,7 @@ function sendDataSlice() {
 
 function sendDone() {
   if (peerSocket.readyState === peerSocket.OPEN) {
-    console.log("sent msg");
+    //console.log("sent msg");
 
     /* let companion know that the array has
      * been sent entirely
@@ -187,7 +202,7 @@ function sendDone() {
 
 function syncTime() {
   if (peerSocket.readyState === peerSocket.OPEN) {
-    console.log("watch sent init time")
+    //console.log("watch sent init time")
     peerSocket.send({ watchInit : Date.now()});
 
     clearInterval(syncHandle);
@@ -203,10 +218,10 @@ messaging.peerSocket.onerror = (evt) => {
 
 messaging.peerSocket.onmessage = (evt) => {
   var crtTime = Date.now();
-  console.log(evt.data);
+  //console.log(evt.data);
 
   /* time sync with the phone and the server */
-  console.log("watch received" + evt.data);
+  //console.log("watch received" + evt.data);
 
   if (evt.data.hasOwnProperty('watchInit')) {
     /* reset can now be used */
@@ -218,7 +233,9 @@ messaging.peerSocket.onmessage = (evt) => {
 
     timedif = (evt.data.phoneInit - evt.data.watchInit) - delta / 2;
 
-    console.log("WATCH timedif is " + timedif);
+    // console.log(delta + " " + evt.data.phoneInit + " " + evt.data.watchInit);
+
+    // console.log("watch " + timedif);
 
     return;
   } else if (evt.data.localeCompare("retryTime") == 0) {
@@ -231,7 +248,8 @@ messaging.peerSocket.onmessage = (evt) => {
   crtMsg += 1;
   var sentMessages = document.getElementById("sent-messages");
   sentMessages.textContent = parseInt(crtMsg / (msgsNr + 1) * 100) + "%";
-  console.log(parseInt(crtMsg / (msgsNr + 1) * 100) + "%")
+  //console.log(parseInt(crtMsg / (msgsNr + 1) * 100) + "%")
+  // console.log("watch ack slice");
 
   if (crtMsg < msgsNr) {
     sendDataHandle = setInterval(sendDataSlice, RETRY_SEND_MS);
@@ -253,25 +271,11 @@ messaging.peerSocket.onmessage = (evt) => {
 }
 
 function refreshData() {
-  accx = accel.x ? accel.x : 0;
-  accy = accel.y ? accel.y : 0;
-  accz = accel.z ? accel.z : 0;
-  gyrox = gyro.x ? gyro.x : 0;
-  gyroy = gyro.y ? gyro.y : 0;
-  gyroz = gyro.z ? gyro.z : 0;
-
-  if (data.length == 0)
-    console.log("start");
-
   data.push(Date.now());
-  data.push(accx);
-  data.push(accy);
-  data.push(accz);
-  data.push(gyrox);
-  data.push(gyroy);
-  data.push(gyroz);
+  data.push({'x' : accel.x, 'y': accel.y, 'z': accel.z});
+  data.push({'x' : gyro.x, 'y': gyro.y, 'z': gyro.z});
 
-  if (parseInt(data.length / 7) % 50 == 0) {
+  if (data.length >= ARRAY_LIMIT) {
     /* Stop collecting as memory is full */
     if (data.length >= ARRAY_LIMIT && !fullLabelVisible) {
       clearInterval(refreshHandle);
