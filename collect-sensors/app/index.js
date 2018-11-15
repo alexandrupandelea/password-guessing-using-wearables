@@ -150,18 +150,23 @@ sendButton.onclick = function(evt) {
   id.showUI();
 
   var new_data = []
-  for (var i = 0; i < data.length; i += 3) {
-    new_data.push(data[i])
+
+  while (data.length !== 0) {
+    new_data.push(data[0])
     /* copy accel info */
-    new_data.push(data[i + 1].x ? data[i + 1].x : 0)
-    new_data.push(data[i + 1].y ? data[i + 1].y : 0)
-    new_data.push(data[i + 1].z ? data[i + 1].z : 0)
+    new_data.push(data[1].x ? data[1].x : 0)
+    new_data.push(data[1].y ? data[1].y : 0)
+    new_data.push(data[1].z ? data[1].z : 0)
     /* copy gyro info */
-    new_data.push(data[i + 2].x ? data[i + 2].x : 0)
-    new_data.push(data[i + 2].y ? data[i + 2].y : 0)
-    new_data.push(data[i + 2].z ? data[i + 2].z : 0)
+    new_data.push(data[2].x ? data[2].x : 0)
+    new_data.push(data[2].y ? data[2].y : 0)
+    new_data.push(data[2].z ? data[2].z : 0)
+
+    data.splice(0, 3)
   }
+
   data = new_data
+  new_data = []
 
   /* update timestamps with the difference between the
    * watch and the server
