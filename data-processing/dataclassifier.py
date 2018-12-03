@@ -7,7 +7,7 @@ from tsfresh.examples.robot_execution_failures import download_robot_execution_f
 from tsfresh import extract_features, extract_relevant_features, select_features
 from tsfresh.utilities.dataframe_functions import impute
 from tsfresh.feature_extraction import ComprehensiveFCParameters
-from sklearn.cross_validation import train_test_split
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
